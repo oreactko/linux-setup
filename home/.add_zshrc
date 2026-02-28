@@ -1,0 +1,18 @@
+# Setup command
+zstyle ':omz:plugins:eza' 'icons' yes
+zstyle ':omz:plugins:eza' 'git-status' yes
+zstyle ':omz:plugins:eza' 'show-group' no
+zstyle ':omz:plugins:eza' 'size-prefix' binary
+zi snippet OMZP::eza
+zi snippet OMZP::extract
+zi snippet OMZP::aliases
+# Setup completion
+zi ice blockf
+zi light zsh-users/zsh-completions
+# Setup some stuff
+zi light z-shell/F-Sy-H
+zi light zsh-users/zsh-autosuggestions
+# Theme setup
+export PATH="/usr/lib/ccache:$PATH"
+eval "$(oh-my-posh init zsh --config ~/.theme.omp.json)"
+
