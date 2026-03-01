@@ -13,10 +13,6 @@ if [[ "${ID:-}" != "fedora" ]]; then
   exit 1
 fi
 
-if [[ "${VERSION_ID:-0}" -lt 43 ]]; then
-  echo "Fedora 43 or newer is required. Detected VERSION_ID=${VERSION_ID:-unknown}." >&2
-  exit 1
-fi
 
 sudo dnf install "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm" "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm" dnf5-plugins -y
 sudo dnf config-manager setopt fedora-cisco-openh264.enabled=1
