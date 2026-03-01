@@ -13,7 +13,6 @@ if [[ "${ID:-}" != "fedora" ]]; then
   exit 1
 fi
 
-
 sudo dnf install "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm" "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm" dnf5-plugins -y
 sudo dnf config-manager setopt fedora-cisco-openh264.enabled=1
 sudo dnf config-manager addrepo --from-repofile=https://cli.github.com/packages/rpm/gh-cli.repo -y
