@@ -1,5 +1,19 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
+
+if [[ ! -r /etc/os-release ]]; then
+  echo "Cannot detect operating system. /etc/os-release is missing." >&2
+  exit 1
+fi
+
+# shellcheck disable=SC1091
+source /etc/os-release
+if [[ "${ID:-}" != "fedora" ]]; then
+  echo "This script only supports Fedora. Detected ID=${ID:-unknown}." >&2
+  exit 1
+fi
+
+
 sudo dnf install "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm" "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm" dnf5-plugins -y
 sudo dnf config-manager setopt fedora-cisco-openh264.enabled=1
 sudo dnf config-manager addrepo --from-repofile=https://cli.github.com/packages/rpm/gh-cli.repo -y
@@ -22,5 +36,5 @@ sudo tuned-adm profile balanced
 sudo chsh -s /usr/bin/zsh "${SUDO_USER:-$USER}"
 sh -c "$(curl -fsSL get.zshell.dev)" --
 wget https://raw.githubusercontent.com/oreactko/linux-setup/refs/heads/main/home/.theme.omp.json -O ~/.theme.omp.json
-curl https://raw.githubusercontent.com/oreactko/linux-setup/refs/heads/main/home/add_zshrc |tee -a ~/.zshrc
+curl https://raw.githubusercontent.com/oreactko/linux-setup/refs/heads/main/home/add_zshrc | tee -a ~/.zshrc
 exec zsh
