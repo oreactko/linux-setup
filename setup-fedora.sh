@@ -22,29 +22,43 @@ sudo dnf copr enable agriffis/neovim-nightly -y
 sudo dnf group upgrade core -y
 sudo dnf upgrade --refresh -y
 sudo dnf distro-sync -y
-sudo dnf install @multimedia @development-tools @c-development git zsh gh neovim ripgrep fd-find btop wget curl eza fastfetch unzip zip 7zip python3 python3-pip deno yt-dlp ncdu oh-my-posh nodejs clang gcc-c++ ninja-build cmake gdb ccache llvm-tools x265 openh265 mesa-va-drivers mesa-vdpau-drivers ffmpeg ffmpeg-libs gstreamer1-plugins-{bad-free,bad-freeworld,good,good-extras,ugly,ugly-free} gstreamer1-libav gstreamer1-plugins-bad-nonfree gstreamer1-plugins-ugly lame x264 openh264 intel-media-driver libva-utils vdpauinfo libde265 zram-generator tuned tuned-utils crudini thermald -y
+sudo dnf install -y @multimedia @development-tools @c-development git zsh gh neovim ripgrep fd-find btop wget curl eza fastfetch unzip zip 7zip python3 python3-pip deno yt-dlp ncdu oh-my-posh nodejs clang gcc-c++ ninja-build cmake gdb ccache llvm-tools x265 openh265 mesa-va-drivers mesa-vdpau-drivers ffmpeg ffmpeg-libs gstreamer1-plugins-{bad-free,bad-freeworld,good,good-extras,ugly,ugly-free} gstreamer1-libav gstreamer1-plugins-bad-nonfree gstreamer1-plugins-ugly lame x264 openh264 intel-media-driver libva-utils vdpauinfo libde265 zram-generator tuned tuned-utils crudini
 npm config set prefix ~/.local
 npm install -g @github/copilot
 
 # Configure some system settings
 sudo crudini --set /etc/systemd/zram-generator.conf zram0 compression-algorithm zstd
 sudo systemctl daemon-reload
-sudo systemctl enable --now fstrim.timer systemd-oomd systemd-zram-setup@zram0 systemd-resolved tuned thermald
+sudo systemctl enable --now fstrim.timer systemd-oomd systemd-zram-setup@zram0 systemd-resolved tuned
 sudo tuned-adm profile balanced
 
+if systemd-detect-virt -q; then
+    echo "VM detected → skip thermald"
+else
+    sudo dnf install thermald -y
+    sudo systemctl enable --now thermald
+fi
 # Setup swap file
 # Calculate swap size (RAM-based formula)
 SWAPSIZE=$(free | awk '/Mem/ {x=$2/1024/1024; printf "%.0fG", (x<2 ? 2*x : x<8 ? 1.5*x : x) }')
-SWAPFILE=/var/swap/swapfile
+SWAPFILE="/var/swap/swapfile"
+SWAPFILE_ENTRY="$SWAPFILE none swap defaults 0 0"
 
-# Create btrfs subvolume and swap file
-sudo btrfs subvolume create /var/swap
-sudo btrfs filesystem mkswapfile --size $SWAPSIZE --uuid clear $SWAPFILE
+# Create swapfile
+sudo mkdir -p /var/swap
 
-# Enable swap file
-echo $SWAPFILE none swap defaults 0 0 | sudo tee --append /etc/fstab
+if ! sudo btrfs subvolume show /var/swap >/dev/null 2>&1; then
+    sudo btrfs subvolume create /var/swap
+fi
+
+if [[ ! -f "$SWAPFILE" ]]; then
+    sudo btrfs filesystem mkswapfile --size $SWAPSIZE --uuid clear $SWAPFILE
+fi
+
+if ! grep -qxF "$SWAPFILE_ENTRY" /etc/fstab; then
+    echo "$SWAPFILE_ENTRY" | sudo tee -a /etc/fstab
+fi
 sudo swapon --all --verbose
-
 # Setup zsh and oh-my-posh
 sudo chsh -s /usr/bin/zsh "${SUDO_USER:-$USER}"
 sh -c "$(curl -fsSL get.zshell.dev)" --
