@@ -33,10 +33,10 @@ sudo systemctl enable --now fstrim.timer systemd-oomd systemd-zram-setup@zram0 s
 sudo tuned-adm profile balanced
 
 if systemd-detect-virt -q; then
-    echo "VM detected → skip thermald"
+  echo "VM detected → skip thermald"
 else
-    sudo dnf install thermald -y
-    sudo systemctl enable --now thermald
+  sudo dnf install thermald -y
+  sudo systemctl enable --now thermald
 fi
 # Setup swap file
 # Calculate swap size (RAM-based formula)
@@ -48,15 +48,15 @@ SWAPFILE_ENTRY="$SWAPFILE none swap defaults 0 0"
 sudo mkdir -p /var/swap
 
 if ! sudo btrfs subvolume show /var/swap >/dev/null 2>&1; then
-    sudo btrfs subvolume create /var/swap
+  sudo btrfs subvolume create /var/swap
 fi
 
 if [[ ! -f "$SWAPFILE" ]]; then
-    sudo btrfs filesystem mkswapfile --size $SWAPSIZE --uuid clear $SWAPFILE
+  sudo btrfs filesystem mkswapfile --size "$SWAPSIZE" --uuid clear $SWAPFILE
 fi
 
 if ! grep -qxF "$SWAPFILE_ENTRY" /etc/fstab; then
-    echo "$SWAPFILE_ENTRY" | sudo tee -a /etc/fstab
+  echo "$SWAPFILE_ENTRY" | sudo tee -a /etc/fstab
 fi
 sudo swapon --all --verbose
 # Setup zsh and oh-my-posh
