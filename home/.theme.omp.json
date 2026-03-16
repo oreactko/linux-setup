@@ -3,7 +3,7 @@
   "transient_prompt": {
     "background": "transparent",
     "foreground": "#ffffff",
-    "template": "{{ .Shell }}> "
+    "template": "\ue285\ueab6 "
   },
   "blocks": [
     {
