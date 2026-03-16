@@ -1,5 +1,10 @@
 {
   "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+  "transient_prompt": {
+    "background": "transparent",
+    "foreground": "#ffffff",
+    "template": "{{ .Shell }}> "
+  },
   "blocks": [
     {
       "alignment": "left",
@@ -10,11 +15,11 @@
           "leading_diamond": "\u256d\u2500\ue0b6",
           "style": "diamond",
           "template": "\uf007 {{ .UserName }}@{{ .HostName }} ",
-          "properties": {
-          	"display_host": true,
-    		"display_user": true,
-    		"always_enabled": true
-  	  },
+          "options": {
+            "display_host": true,
+            "display_user": true,
+            "always_enabled": true
+          },
           "type": "session"
         },
         {
@@ -28,7 +33,7 @@
           "background": "#FF9248",
           "foreground": "#2d3436",
           "powerline_symbol": "\ue0b0",
-          "properties": {
+          "options": {
             "folder_icon": " \uf07b ",
             "home_icon": "\ue617",
             "style": "folder"
@@ -47,7 +52,7 @@
           ],
           "foreground": "#011627",
           "powerline_symbol": "\ue0b0",
-          "properties": {
+          "options": {
             "branch_icon": "\ue725 ",
             "fetch_status": true,
             "fetch_upstream_icon": true
@@ -59,7 +64,7 @@
         {
           "background": "#83769c",
           "foreground": "#ffffff",
-          "properties": {
+          "options": {
             "style": "roundrock",
             "threshold": 0
           },
@@ -78,7 +83,7 @@
           "background": "#303030",
           "foreground": "#3C873A",
           "leading_diamond": "\ue0b6",
-          "properties": {
+          "options": {
             "fetch_package_manager": true,
             "npm_icon": " <#cc3a3a>\ue5fa</> ",
             "yarn_icon": " <#348cba>\ue6a7</>"
@@ -219,7 +224,7 @@
           "foreground": "#222222",
           "leading_diamond": "\ue0b6",
           "trailing_diamond": "<transparent,background>\ue0b2</>",
-          "properties": {
+          "options": {
             "linux": "\ue712",
             "macos": "\ue711",
             "windows": "\ue70f"
@@ -238,7 +243,7 @@
           "foreground": "#262626",
           "invert_powerline": true,
           "powerline_symbol": "\ue0b2",
-          "properties": {
+          "options": {
             "charged_icon": "\uf240 ",
             "charging_icon": "\uf1e6 ",
             "discharging_icon": "\ue234 "
@@ -252,7 +257,7 @@
           "foreground": "#ffffff",
           "invert_powerline": true,
           "leading_diamond": "\ue0b2",
-          "properties": {
+          "options": {
             "time_format": "15:04"
           },
           "style": "diamond",
@@ -275,8 +280,10 @@
         },
         {
           "foreground": "#e0f8ff",
-          "foreground_templates": ["{{ if gt .Code 0 }}#ef5350{{ end }}"],
-          "properties": {
+          "foreground_templates": [
+            "{{ if gt .Code 0 }}#ef5350{{ end }}"
+          ],
+          "options": {
             "always_enabled": true
           },
           "style": "plain",
