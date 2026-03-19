@@ -2,7 +2,7 @@
 set -euo pipefail
 
 mount_point="/mnt/hgfs"
-fstab_entry="vmhgfs-fuse /mnt/hgfs fuse defaults,allow_other,nofail 0 0"
+fstab_entry=".host:/ /mnt/hgfs fuse.vmhgfs-fuse defaults,allow_other,nofail 0 0"
 
 virt_type="$(systemd-detect-virt 2>/dev/null || true)"
 if [[ "$virt_type" != "vmware" ]]; then
