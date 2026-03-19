@@ -16,6 +16,9 @@ if ! command -v vmhgfs-fuse >/dev/null 2>&1; then
 fi
 
 sudo mkdir -p "$mount_point"
+if ! grep -q '^[[:space:]]*user_allow_other' /etc/fuse.conf; then
+  echo "user_allow_other" | sudo tee -a /etc/fuse.conf
+fi
 if ! grep -qxF "$fstab_entry" /etc/fstab; then
   echo "$fstab_entry" | sudo tee -a /etc/fstab >/dev/null
 fi
