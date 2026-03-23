@@ -19,7 +19,25 @@ sudo mkdir -p "$mount_point"
 if ! grep -q '^[[:space:]]*user_allow_other' /etc/fuse.conf; then
   echo "user_allow_other" | sudo tee -a /etc/fuse.conf
 fi
-if ! grep -qxF "$fstab_entry" /etc/fstab; then
-  echo "$fstab_entry" | sudo tee -a /etc/fstab >/dev/null
+sudo tee /etc/systemd/system/mnt-hgfs.mount <<EOF
+[Unit]
+Description=VMware mount for hgfs
+DefaultDependencies=no
+Before=umount.target
+ConditionVirtualization=vmware
+After=sys-fs-fuse-connections.mount
+
+[Mount]
+What=vmhgfs-fuse
+Where=/mnt/hgfs
+Type=fuse
+Options=default_permissions,allow_other
+
+[Install]
+WantedBy=multi-user.target
+EOF
+if ! grep -q "^fuse" /etc/modules-load.d/open-vm-tools.conf; then
+  echo "fuse" | sudo tee -a /etc/modules-load.d/open-vm-tools.conf
 fi
-sudo mount -a
+sudo systemctl daemon-reload
+sudo systemctl enable --now mnt-hgfs.mount
