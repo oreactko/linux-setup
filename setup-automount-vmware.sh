@@ -35,4 +35,4 @@ if ! grep -q "^fuse" /etc/modules-load.d/open-vm-tools.conf; then
   echo "fuse" | sudo tee -a /etc/modules-load.d/open-vm-tools.conf
 fi
 sudo systemctl daemon-reload
-sudo systemctl enable --now mnt-hgfs.mount
+sudo systemctl enable --now mnt-hgfs.service
