@@ -19,19 +19,19 @@ sudo mkdir -p "$mount_point"
 if ! grep -q '^[[:space:]]*user_allow_other' /etc/fuse.conf; then
   echo "user_allow_other" | sudo tee -a /etc/fuse.conf
 fi
-sudo tee /etc/systemd/system/mnt-hgfs.mount <<EOF
+sudo tee /etc/systemd/system/mnt-hgfs.service <<EOF
 [Unit]
 Description=VMware mount for hgfs
-DefaultDependencies=no
-Before=umount.target
 ConditionVirtualization=vmware
-After=sys-fs-fuse-connections.mount
+After=vmtoolsd.service
 
-[Mount]
-What=.host:/
-Where=/mnt/hgfs
-Type=fuse.vmhgfs-fuse
-Options=allow_other,default_permissions
+[Service]
+Type=oneshot
+ExecStartPre=/usr/bin/mkdir -p /mnt/hgfs
+ExecStartPre=/usr/bin/bash -c '! mountpoint -q /mnt/hgfs'
+ExecStart=/usr/bin/vmhgfs-fuse .host:/ /mnt/hgfs -o allow_other,default_permissions
+ExecStop=/usr/bin/fusermount -u /mnt/hgfs
+RemainAfterExit=yes
 
 [Install]
 WantedBy=multi-user.target
