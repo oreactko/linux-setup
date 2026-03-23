@@ -28,10 +28,10 @@ ConditionVirtualization=vmware
 After=sys-fs-fuse-connections.mount
 
 [Mount]
-What=vmhgfs-fuse
+What=.host:/
 Where=/mnt/hgfs
-Type=fuse
-Options=default_permissions,allow_other
+Type=fuse.vmhgfs-fuse
+Options=allow_other,default_permissions
 
 [Install]
 WantedBy=multi-user.target
