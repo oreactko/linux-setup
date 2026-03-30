@@ -22,7 +22,7 @@ sudo dnf copr enable agriffis/neovim-nightly -y
 sudo dnf group upgrade core -y
 sudo dnf upgrade --refresh -y
 sudo dnf distro-sync -y
-sudo dnf install -y @multimedia @development-tools @c-development git zsh gh neovim ripgrep fd-find btop wget curl eza fastfetch unzip zip 7zip python3 python3-pip deno yt-dlp ncdu oh-my-posh nodejs clang gcc-c++ ninja-build cmake gdb ccache llvm-tools x265 openh265 mesa-va-drivers mesa-vdpau-drivers ffmpeg ffmpeg-libs gstreamer1-plugins-{bad-free,bad-freeworld,good,good-extras,ugly,ugly-free} gstreamer1-libav gstreamer1-plugins-bad-nonfree gstreamer1-plugins-ugly lame x264 openh264 intel-media-driver libva-utils vdpauinfo libde265 zram-generator tuned tuned-utils crudini
+sudo dnf install -y @development-tools @c-development git zsh gh neovim ripgrep fd-find btop wget curl eza fastfetch unzip zip 7zip python3 python3-pip deno yt-dlp ncdu oh-my-posh nodejs clang gcc-c++ ninja-build cmake gdb ccache llvm-tools x265 mesa-va-drivers ffmpeg ffmpeg-libs gstreamer1-plugins-{bad-free,bad-freeworld,bad-nonfree,good,good-extras,ugly,ugly-free} gstreamer1-libav lame x264 openh264 intel-media-driver libva-utils libde265 zram-generator tuned tuned-utils crudini
 npm config set prefix ~/.local
 npm install -g @github/copilot
 
