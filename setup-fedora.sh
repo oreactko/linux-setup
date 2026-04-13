@@ -21,43 +21,44 @@ sudo dnf install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/t
 sudo dnf copr enable agriffis/neovim-nightly -y
 sudo dnf upgrade --refresh -y
 sudo dnf distro-sync -y
-sudo dnf install -y @development-tools @c-development git zsh gh neovim ripgrep fd-find btop wget curl eza fastfetch unzip zip 7zip python3 python3-pip deno yt-dlp ncdu oh-my-posh nodejs clang gcc-c++ ninja-build cmake gdb ccache llvm-tools x265 mesa-va-drivers ffmpeg ffmpeg-libs gstreamer1-plugins-{bad-free,bad-freeworld,bad-nonfree,good,good-extras,ugly,ugly-free} gstreamer1-libav lame x264 openh264 intel-media-driver libva-utils libde265 zram-generator tuned tuned-utils crudini
+sudo dnf install -y @development-tools @c-development git zsh gh neovim ripgrep fd-find btop wget curl eza fastfetch unzip zip 7zip python3 python3-pip deno yt-dlp ncdu oh-my-posh nodejs clang gcc-c++ ninja-build cmake gdb ccache llvm-tools x265 ffmpeg ffmpeg-libs gstreamer1-plugins-{bad-free,bad-freeworld,bad-nonfree,good,good-extras,ugly,ugly-free} gstreamer1-libav lame x264 openh264 libde265 crudini
 npm config set prefix ~/.local
 npm install -g @github/copilot
-
-# Configure some system settings
-sudo crudini --set /etc/systemd/zram-generator.conf zram0 compression-algorithm zstd
-sudo systemctl daemon-reload
-sudo systemctl enable --now fstrim.timer systemd-oomd systemd-zram-setup@zram0 systemd-resolved tuned
-sudo tuned-adm profile balanced
-
-if systemd-detect-virt -q; then
-  echo "VM detected → skip thermald"
-else
+if ! grep -qiE "(microsoft|wsl)" /proc/sys/kernel/osrelease; then
+  sudo dnf install zram-generator tuned tuned-utils -y
+  sudo crudini --set /etc/systemd/zram-generator.conf zram0 compression-algorithm zstd
+  sudo systemctl daemon-reload
+  sudo systemctl enable --now fstrim.timer systemd-oomd systemd-zram-setup@zram0 systemd-resolved tuned
+  sudo tuned-adm profile balanced
+fi
+if ! systemd-detect-virt -q; then
   sudo dnf install thermald -y
   sudo systemctl enable --now thermald
 fi
 # Setup swap file
-# Calculate swap size (RAM-based formula)
-SWAPSIZE=$(free | awk '/Mem/ {x=$2/1024/1024; printf "%.0fG", (x<2 ? 2*x : x<8 ? 1.5*x : x) }')
-SWAPFILE="/var/swap/swapfile"
-SWAPFILE_ENTRY="$SWAPFILE none swap defaults 0 0"
+FS_TYPE=$(findmnt -n -o FSTYPE /)
+if [ "$FS_TYPE" = "btrfs" ] && ! grep -qiE "(microsoft|wsl)" /proc/sys/kernel/osrelease; then
+  # Calculate swap size (RAM-based formula)
+  SWAPSIZE=$(free | awk '/Mem/ {x=$2/1024/1024; printf "%.0fG", (x<2 ? 2*x : x<8 ? 1.5*x : x) }')
+  SWAPFILE="/var/swap/swapfile"
+  SWAPFILE_ENTRY="$SWAPFILE none swap defaults 0 0"
 
-# Create swapfile
-sudo mkdir -p /var/swap
+  # Create swapfile
+  sudo mkdir -p /var/swap
 
-if ! sudo btrfs subvolume show /var/swap >/dev/null 2>&1; then
-  sudo btrfs subvolume create /var/swap
+  if ! sudo btrfs subvolume show /var/swap >/dev/null 2>&1; then
+    sudo btrfs subvolume create /var/swap
+  fi
+
+  if [[ ! -f "$SWAPFILE" ]]; then
+    sudo btrfs filesystem mkswapfile --size "$SWAPSIZE" --uuid clear $SWAPFILE
+  fi
+
+  if ! grep -qxF "$SWAPFILE_ENTRY" /etc/fstab; then
+    echo "$SWAPFILE_ENTRY" | sudo tee -a /etc/fstab
+  fi
+  sudo swapon --all --verbose
 fi
-
-if [[ ! -f "$SWAPFILE" ]]; then
-  sudo btrfs filesystem mkswapfile --size "$SWAPSIZE" --uuid clear $SWAPFILE
-fi
-
-if ! grep -qxF "$SWAPFILE_ENTRY" /etc/fstab; then
-  echo "$SWAPFILE_ENTRY" | sudo tee -a /etc/fstab
-fi
-sudo swapon --all --verbose
 # Setup zsh and oh-my-posh
 sudo chsh -s /usr/bin/zsh "${SUDO_USER:-$USER}"
 sh -c "$(curl -fsSL get.zshell.dev)" --
