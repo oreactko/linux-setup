@@ -24,6 +24,7 @@ sudo dnf distro-sync -y
 sudo dnf install -y @development-tools @c-development git zsh gh neovim ripgrep fd-find btop wget curl eza fastfetch unzip zip 7zip python3 python3-pip deno yt-dlp ncdu oh-my-posh nodejs clang gcc-c++ ninja-build cmake gdb ccache llvm-tools x265 ffmpeg ffmpeg-libs gstreamer1-plugins-{bad-free,bad-freeworld,bad-nonfree,good,good-extras,ugly,ugly-free} gstreamer1-libav lame x264 openh264 libde265 crudini
 npm config set prefix ~/.local
 npm install -g @github/copilot
+sudo systemctl enable --now systemd-resolved
 if ! grep -qiE "(microsoft|wsl)" /proc/sys/kernel/osrelease; then
   sudo dnf install zram-generator tuned tuned-utils -y
   sudo crudini --set /etc/systemd/zram-generator.conf zram0 compression-algorithm zstd
