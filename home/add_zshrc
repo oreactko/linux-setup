@@ -13,6 +13,6 @@ zi light zsh-users/zsh-completions
 zi light z-shell/F-Sy-H
 zi light zsh-users/zsh-autosuggestions
 # Theme setup
-export PATH="/usr/lib/ccache:$PATH"
+export PATH="/usr/lib/ccache:$HOME/.local/bin:$PATH"
 eval "$(oh-my-posh init zsh --config ~/.theme.omp.json)"
 
