@@ -66,6 +66,7 @@ sudo chsh -s /usr/bin/zsh "${SUDO_USER:-$USER}"
 sh -c "$(curl -fsSL get.zshell.dev)" --
 git clone https://github.com/LazyVim/starter ~/.config/nvim
 rm -rf ~/.config/nvim/.git
+wget https://raw.githubusercontent.com/oreactko/linux-setup/refs/heads/main/nvim/lazyvim.json -O ~/.config/nvim/lazyvim.json
 wget https://raw.githubusercontent.com/oreactko/linux-setup/refs/heads/main/nvim/lua/config/options.lua -O ~/.config/nvim/lua/config/options.lua
 wget https://raw.githubusercontent.com/oreactko/linux-setup/refs/heads/main/home/.theme.omp.json -O ~/.theme.omp.json
 curl https://raw.githubusercontent.com/oreactko/linux-setup/refs/heads/main/home/add_zshrc | tee -a ~/.zshrc
