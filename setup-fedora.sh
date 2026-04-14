@@ -66,7 +66,7 @@ sh -c "$(curl -fsSL get.zshell.dev)" --
 git clone https://github.com/LazyVim/starter ~/.config/nvim
 rm -rf ~/.config/nvim/.git
 test -f ~/.config/nvim/lazyvim.json || echo '{}' >~/.config/nvim/lazyvim.json
-jq --slurpfile a https://raw.githubusercontent.com/oreactko/linux-setup/refs/heads/main/nvim/plugins.json '.extras = $a[0].extras' ~/.config/nvim/lazyvim.json | sponge ~/.config/nvim/lazyvim.json
+jq --slurpfile a <(curl -s https://raw.githubusercontent.com/oreactko/linux-setup/refs/heads/main/nvim/extras.json) '.extras = $a[0].extras' ~/.config/nvim/lazyvim.json | sponge ~/.config/nvim/lazyvim.json
 wget https://raw.githubusercontent.com/oreactko/linux-setup/refs/heads/main/nvim/lua/config/options.lua -O ~/.config/nvim/lua/config/options.lua
 wget https://raw.githubusercontent.com/oreactko/linux-setup/refs/heads/main/home/.theme.omp.json -O ~/.theme.omp.json
 curl https://raw.githubusercontent.com/oreactko/linux-setup/refs/heads/main/home/add_zshrc | tee -a ~/.zshrc
