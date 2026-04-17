@@ -17,7 +17,7 @@ fi
 sudo dnf install "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm" "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm" dnf5-plugins -y
 sudo dnf config-manager setopt fedora-cisco-openh264.enabled=1
 sudo dnf config-manager addrepo --from-repofile=https://cli.github.com/packages/rpm/gh-cli.repo -y
-sudo dnf install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release terra-release-mesa terra-release-extras terra-release-multimedia -y
+sudo dnf install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release terra-release-extras terra-release-multimedia -y
 sudo dnf copr enable agriffis/neovim-nightly -y
 sudo dnf upgrade --refresh -y
 sudo dnf distro-sync -y
@@ -25,11 +25,13 @@ sudo dnf install -y @development-tools @c-development lazygit moreutils git zsh 
 npm config set prefix ~/.local
 npm install -g @github/copilot
 sudo systemctl enable --now systemd-resolved
-if ! grep -qiE "(microsoft|wsl)" /proc/sys/kernel/osrelease; then
+IS_WSL=false
+grep -qiE "(microsoft|wsl)" /proc/sys/kernel/osrelease && IS_WSL=true
+if ! [[ "$IS_WSL" == true ]]; then
   sudo dnf install zram-generator tuned tuned-utils -y
   sudo crudini --set /etc/systemd/zram-generator.conf zram0 compression-algorithm zstd
   sudo systemctl daemon-reload
-  sudo systemctl enable --now fstrim.timer systemd-oomd systemd-zram-setup@zram0 systemd-resolved tuned
+  sudo systemctl enable --now fstrim.timer systemd-oomd systemd-zram-setup@zram0 tuned
   sudo tuned-adm profile balanced
 fi
 if ! systemd-detect-virt -q; then
@@ -38,7 +40,7 @@ if ! systemd-detect-virt -q; then
 fi
 # Setup swap file
 FS_TYPE=$(findmnt -n -o FSTYPE /)
-if [ "$FS_TYPE" = "btrfs" ] && ! grep -qiE "(microsoft|wsl)" /proc/sys/kernel/osrelease; then
+if [ "$FS_TYPE" = "btrfs" ] && ! [[ "$IS_WSL" == true ]]; then
   # Calculate swap size (RAM-based formula)
   SWAPSIZE=$(free | awk '/Mem/ {x=$2/1024/1024; printf "%.0fG", (x<2 ? 2*x : x<8 ? 1.5*x : x) }')
   SWAPFILE="/var/swap/swapfile"
@@ -69,4 +71,10 @@ wget https://raw.githubusercontent.com/oreactko/linux-setup/refs/heads/main/nvim
 wget https://raw.githubusercontent.com/oreactko/linux-setup/refs/heads/main/nvim/lua/config/options.lua -O ~/.config/nvim/lua/config/options.lua
 wget https://raw.githubusercontent.com/oreactko/linux-setup/refs/heads/main/home/.theme.omp.json -O ~/.theme.omp.json
 curl https://raw.githubusercontent.com/oreactko/linux-setup/refs/heads/main/home/add_zshrc | tee -a ~/.zshrc
+if [[ "$IS_WSL" == true ]]; then
+  cat <<EOF >>~/.zshrc
+export MESA_LOADER_DRIVER_OVERRIDE=d3d12
+export GALLIUM_DRIVER=d3d12 
+EOF
+fi
 exec zsh
