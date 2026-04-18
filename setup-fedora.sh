@@ -21,7 +21,8 @@ sudo dnf install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/t
 sudo dnf copr enable agriffis/neovim-nightly -y
 sudo dnf upgrade --refresh -y
 sudo dnf distro-sync -y
-sudo dnf install -y @development-tools @c-development lazygit moreutils git zsh gh neovim ripgrep fd-find btop wget curl eza fastfetch unzip zip 7zip python3 python3-pip deno yt-dlp ncdu oh-my-posh nodejs clang gcc-c++ ninja-build cmake gdb ccache llvm x265 ffmpeg ffmpeg-libs gstreamer1-plugins-{bad-free,bad-freeworld,bad-nonfree,good,good-extras,ugly,ugly-free} gstreamer1-libav lame x264 openh264 libde265 crudini
+sudo dnf install -y @development-tools @c-development python3.11 python3-devel python3.11-devel fzf lazygit moreutils git zsh gh neovim ripgrep fd-find btop wget curl eza fastfetch unzip zip 7zip python3 python3-pip deno yt-dlp ncdu oh-my-posh nodejs clang gcc-c++ ninja-build cmake gdb ccache x265 ffmpeg ffmpeg-libs gstreamer1-plugins-{bad-free,bad-freeworld,bad-nonfree,good,good-extras,ugly,ugly-free} gstreamer1-libav lame x264 openh264 libde265 crudini
+python3 -m pip install --user pipx
 npm config set prefix ~/.local
 npm install -g @github/copilot
 sudo systemctl enable --now systemd-resolved
@@ -71,6 +72,7 @@ wget https://raw.githubusercontent.com/oreactko/linux-setup/refs/heads/main/nvim
 wget https://raw.githubusercontent.com/oreactko/linux-setup/refs/heads/main/nvim/lua/config/options.lua -O ~/.config/nvim/lua/config/options.lua
 wget https://raw.githubusercontent.com/oreactko/linux-setup/refs/heads/main/home/.theme.omp.json -O ~/.theme.omp.json
 curl https://raw.githubusercontent.com/oreactko/linux-setup/refs/heads/main/home/add_zshrc | tee -a ~/.zshrc
+python3 -m pipx ensurepath
 if [[ "$IS_WSL" == true ]]; then
   cat <<EOF >>~/.zshrc
 export MESA_LOADER_DRIVER_OVERRIDE=d3d12
